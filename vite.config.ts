@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  preview: {
+    allowedHosts: [
+      "accounthub-production.up.railway.app",
+      "*.railway.app",
+      "*.up.railway.app",
+    ],
+    host: "0.0.0.0",
+    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+  },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
