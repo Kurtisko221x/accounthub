@@ -1,73 +1,152 @@
-# Welcome to your Lovable project
+# Acc Hub - Account Generator Platform
 
-## Project info
+A modern, full-featured account generator platform with FREE and VIP tiers, built with React, TypeScript, Supabase, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/2aec9b10-ee85-41d3-86dc-3ec32ca602d8
+## Features
 
-## How can I edit this code?
+### 🎯 Core Features
+- **FREE Generator**: 10% success rate accounts
+- **VIP Generator**: 90% success rate accounts (€5 lifetime)
+- **Account Validation**: Automated and manual account testing
+- **Category Management**: 38+ account categories
+- **Admin Panel**: Comprehensive management dashboard
 
-There are several ways of editing your application.
+### 🔧 Admin Features
+- Dashboard with analytics
+- Account management (add, edit, delete, bulk import)
+- Category management
+- User management
+- Promo code generation and management
+- Activity logging
+- Export/Import functionality
+- Discord webhook integration
 
-**Use Lovable**
+### 🎨 Design Features
+- Modern dark theme with neon accents
+- Smooth animations and transitions
+- Responsive design
+- Beautiful gradient effects
+- Loading states and skeletons
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2aec9b10-ee85-41d3-86dc-3ec32ca602d8) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React + TypeScript + Vite
+- **UI**: Shadcn UI + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Icons**: Lucide React
 
-**Use your preferred IDE**
+## Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js 18+ and npm
+- Supabase account (for database and auth)
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. Clone the repository:
+```bash
+git clone https://github.com/Kurtisko221x/accounthub.git
+cd accounthub
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies:
+```bash
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Edit `.env` and add your Supabase credentials:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. Run database migrations:
+   - Go to your Supabase Dashboard
+   - Navigate to SQL Editor
+   - Run all migration files from `supabase/migrations/` in order
+
+5. Start development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Deployment on Railway
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Step 1: Prepare for Deployment
 
-**Use GitHub Codespaces**
+1. Make sure all environment variables are set in Railway:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+2. Build the project locally to test:
+```bash
+npm run build
+```
 
-## What technologies are used for this project?
+### Step 2: Deploy to Railway
 
-This project is built with:
+1. Go to [Railway](https://railway.app)
+2. Click "New Project"
+3. Select "Deploy from GitHub repo"
+4. Choose your repository: `Kurtisko221x/accounthub`
+5. Railway will automatically detect it's a Vite project
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Step 3: Configure Railway
 
-## How can I deploy this project?
+1. **Build Command**: `npm install && npm run build`
+2. **Start Command**: `npx vite preview --host 0.0.0.0 --port $PORT`
+3. **Environment Variables**:
+   - `VITE_SUPABASE_URL` - Your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
+   - `PORT` - Railway will set this automatically
 
-Simply open [Lovable](https://lovable.dev/projects/2aec9b10-ee85-41d3-86dc-3ec32ca602d8) and click on Share -> Publish.
+### Step 4: Database Setup
 
-## Can I connect a custom domain to my Lovable project?
+1. Make sure your Supabase migrations are run
+2. Railway will handle the frontend deployment
+3. Database will be accessed via Supabase (not Railway)
 
-Yes, you can!
+## Project Structure
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```
+├── src/
+│   ├── components/      # React components
+│   │   ├── admin/       # Admin panel components
+│   │   └── ui/          # Shadcn UI components
+│   ├── lib/             # Utility functions
+│   ├── pages/           # Page components
+│   └── integrations/    # Supabase integration
+├── supabase/
+│   └── migrations/      # Database migrations
+└── public/              # Static assets
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## License
+
+MIT
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
