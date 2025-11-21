@@ -141,6 +141,78 @@ Check the console/logs for webhook URLs to add to your platform.
       },
     },
     {
+      name: 'serverinfo',
+      aliases: ['server', 'info'],
+      description: 'ℹ️ Show server information',
+      async execute(message, args) {
+        const guild = message.guild;
+        const embed = new EmbedBuilder()
+          .setTitle(`📊 ${guild.name} - Server Info`)
+          .setThumbnail(guild.iconURL({ dynamic: true }))
+          .addFields(
+            { name: '👥 Members', value: `${guild.memberCount}`, inline: true },
+            { name: '📝 Channels', value: `${guild.channels.cache.size}`, inline: true },
+            { name: '🎭 Roles', value: `${guild.roles.cache.size}`, inline: true },
+            { name: '👑 Owner', value: `<@${guild.ownerId}>`, inline: true },
+            { name: '📅 Created', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
+            { name: '🤖 Bot', value: `<@${message.client.user.id}>`, inline: true },
+          )
+          .setColor(Colors.Blurple)
+          .setFooter({ text: 'Acc Hub - Account Generator Platform' })
+          .setTimestamp();
+
+        await message.reply({ embeds: [embed] });
+      },
+    },
+    {
+      name: 'userinfo',
+      aliases: ['user', 'whois'],
+      description: '👤 Show user information',
+      async execute(message, args) {
+        const target = message.mentions.users.first() || message.author;
+        const member = message.guild.members.cache.get(target.id);
+        
+        if (!member) {
+          return message.reply({ content: '❌ User not found in this server!' });
+        }
+
+        const embed = new EmbedBuilder()
+          .setTitle(`👤 ${target.tag}`)
+          .setThumbnail(target.displayAvatarURL({ dynamic: true }))
+          .addFields(
+            { name: '🆔 User ID', value: target.id, inline: true },
+            { name: '📅 Account Created', value: `<t:${Math.floor(target.createdTimestamp / 1000)}:R>`, inline: true },
+            { name: '📥 Joined Server', value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>`, inline: true },
+            { name: '🎭 Roles', value: member.roles.cache.map(r => r.toString()).slice(0, 10).join(' ') || 'None', inline: false },
+          )
+          .setColor(member.displayColor || Colors.Blurple)
+          .setFooter({ text: 'Acc Hub - Account Generator Platform' })
+          .setTimestamp();
+
+        await message.reply({ embeds: [embed] });
+      },
+    },
+    {
+      name: 'links',
+      aliases: ['invite', 'website'],
+      description: '🔗 Show important links',
+      async execute(message, args) {
+        const platformUrl = process.env.PLATFORM_URL || 'https://your-platform-url.com';
+        const embed = new EmbedBuilder()
+          .setTitle('🔗 Acc Hub Links')
+          .setDescription('Important links for Acc Hub platform')
+          .addFields(
+            { name: '🌐 Website', value: `[Visit Platform](${platformUrl})`, inline: true },
+            { name: '💬 Discord', value: `[Join Server](${message.guild.vanityURLCode ? `https://discord.gg/${message.guild.vanityURLCode}` : 'No invite link'})`, inline: true },
+          )
+          .setColor(Colors.Blurple)
+          .setFooter({ text: 'Acc Hub - Account Generator Platform' })
+          .setTimestamp();
+
+        await message.reply({ embeds: [embed] });
+      },
+    },
+    {
       name: 'help',
       aliases: ['h', 'commands'],
       description: '📖 Show all available commands',
@@ -148,37 +220,27 @@ Check the console/logs for webhook URLs to add to your platform.
         const prefix = process.env.DISCORD_PREFIX || '!';
         
         const embed = new EmbedBuilder()
-          .setTitle('🤖 Acc Hub Bot Commands')
-          .setDescription(`Prefix: **${prefix}**`)
+          .setTitle('🤖 Acc Hub Bot - All Commands')
+          .setDescription(`**Prefix:** \`${prefix}\`\n\nUse \`${prefix}help <command>\` for more info about a specific command.`)
           .addFields(
             {
-              name: `${prefix}setup`,
-              value: '🔧 Setup Acc Hub Discord server (Admin only)',
+              name: '🔧 **Administrator Commands**',
+              value: `\`${prefix}setup\` - Setup Discord server (Admin only)\n\`${prefix}promocode <vip|free>\` - Generate promo code (Admin only)`,
               inline: false,
             },
             {
-              name: `${prefix}stats`,
-              value: '📊 Show platform statistics',
+              name: '📊 **Information Commands**',
+              value: `\`${prefix}stats\` - Show platform statistics\n\`${prefix}serverinfo\` - Show server information\n\`${prefix}userinfo [@user]\` - Show user information\n\`${prefix}links\` - Show important links`,
               inline: false,
             },
             {
-              name: `${prefix}promocode <vip|free>`,
-              value: '🎁 Generate a promo code (Admin only)',
-              inline: false,
-            },
-            {
-              name: `${prefix}ping`,
-              value: '🏓 Check bot latency',
-              inline: false,
-            },
-            {
-              name: `${prefix}help`,
-              value: '📖 Show this help message',
+              name: '🛠️ **Utility Commands**',
+              value: `\`${prefix}ping\` - Check bot latency\n\`${prefix}help [command]\` - Show this help message`,
               inline: false,
             },
           )
           .setColor(Colors.Blurple)
-          .setFooter({ text: 'Acc Hub - Account Generator Platform' })
+          .setFooter({ text: 'Acc Hub - Account Generator Platform • Use !help <command> for more details' })
           .setTimestamp();
 
         await message.reply({ embeds: [embed] });
