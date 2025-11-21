@@ -1,27 +1,23 @@
-import { SlashCommandBuilder, EmbedBuilder, Colors } from 'discord.js';
+import { EmbedBuilder, Colors } from 'discord.js';
 import { setupServer } from './setup.js';
 
 /**
- * Load and register slash commands
+ * Load and register prefix commands
  */
 export async function handleCommands(client) {
   const commands = [
     {
-      data: new SlashCommandBuilder()
-        .setName('setup')
-        .setDescription('🔧 Setup Acc Hub Discord server (Admin only)')
-        .setDefaultMemberPermissions(0x8), // Administrator permission
-      async execute(interaction) {
-        if (!interaction.member.permissions.has('Administrator')) {
-          return interaction.reply({
+      name: 'setup',
+      description: '🔧 Setup Acc Hub Discord server (Admin only)',
+      async execute(message, args) {
+        if (!message.member.permissions.has('Administrator')) {
+          return message.reply({
             content: '❌ You need Administrator permission to run this command!',
-            ephemeral: true,
           });
         }
 
-        await interaction.reply({
+        const loadingMsg = await message.reply({
           content: '🔧 Starting server setup... This may take a minute.',
-          ephemeral: true,
         });
 
         try {
@@ -68,23 +64,22 @@ Check the console/logs for webhook URLs to add to your platform.
               .setColor(Colors.Green)
               .setTimestamp();
 
-            await interaction.editReply({
+            await loadingMsg.edit({
               content: '',
               embeds: [embed],
             });
           }
         } catch (error) {
-          await interaction.editReply({
+          await loadingMsg.edit({
             content: `❌ Error setting up server: ${error.message}`,
           });
         }
       },
     },
     {
-      data: new SlashCommandBuilder()
-        .setName('stats')
-        .setDescription('📊 Show platform statistics'),
-      async execute(interaction) {
+      name: 'stats',
+      description: '📊 Show platform statistics',
+      async execute(message, args) {
         // This would fetch stats from your platform API
         const embed = new EmbedBuilder()
           .setTitle('📊 Acc Hub Platform Statistics')
@@ -92,53 +87,43 @@ Check the console/logs for webhook URLs to add to your platform.
           .setColor(Colors.Blurple)
           .setTimestamp();
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await message.reply({ embeds: [embed] });
       },
     },
     {
-      data: new SlashCommandBuilder()
-        .setName('promocode')
-        .setDescription('🎁 Generate a promo code (Admin only)')
-        .addStringOption(option =>
-          option
-            .setName('plan')
-            .setDescription('Plan type')
-            .setRequired(true)
-            .addChoices(
-              { name: 'VIP', value: 'vip' },
-              { name: 'FREE', value: 'free' }
-            )
-        )
-        .setDefaultMemberPermissions(0x8),
-      async execute(interaction) {
-        if (!interaction.member.permissions.has('Administrator')) {
-          return interaction.reply({
+      name: 'promocode',
+      aliases: ['promo', 'code'],
+      description: '🎁 Generate a promo code (Admin only) - Usage: !promocode <vip|free>',
+      async execute(message, args) {
+        if (!message.member.permissions.has('Administrator')) {
+          return message.reply({
             content: '❌ You need Administrator permission!',
-            ephemeral: true,
           });
         }
 
-        const plan = interaction.options.getString('plan');
+        const plan = args[0]?.toLowerCase();
+        if (!plan || !['vip', 'free'].includes(plan)) {
+          return message.reply({
+            content: '❌ Please specify a plan type: `!promocode vip` or `!promocode free`',
+          });
+        }
+
         // This would integrate with your platform API to generate codes
-        await interaction.reply({
+        await message.reply({
           content: `🎁 Generating ${plan.toUpperCase()} promo code... (This would integrate with your platform API)`,
-          ephemeral: true,
         });
       },
     },
     {
-      data: new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('🏓 Check bot latency'),
-      async execute(interaction) {
-        const sent = await interaction.reply({
+      name: 'ping',
+      description: '🏓 Check bot latency',
+      async execute(message, args) {
+        const sent = await message.reply({
           content: '🏓 Pinging...',
-          fetchReply: true,
-          ephemeral: true,
         });
 
-        const latency = sent.createdTimestamp - interaction.createdTimestamp;
-        const apiLatency = Math.round(interaction.client.ws.ping);
+        const latency = sent.createdTimestamp - message.createdTimestamp;
+        const apiLatency = Math.round(message.client.ws.ping);
 
         const embed = new EmbedBuilder()
           .setTitle('🏓 Pong!')
@@ -149,35 +134,70 @@ Check the console/logs for webhook URLs to add to your platform.
           .setColor(Colors.Green)
           .setTimestamp();
 
-        await interaction.editReply({
+        await sent.edit({
           content: '',
           embeds: [embed],
         });
+      },
+    },
+    {
+      name: 'help',
+      aliases: ['h', 'commands'],
+      description: '📖 Show all available commands',
+      async execute(message, args) {
+        const prefix = process.env.DISCORD_PREFIX || '!';
+        
+        const embed = new EmbedBuilder()
+          .setTitle('🤖 Acc Hub Bot Commands')
+          .setDescription(`Prefix: **${prefix}**`)
+          .addFields(
+            {
+              name: `${prefix}setup`,
+              value: '🔧 Setup Acc Hub Discord server (Admin only)',
+              inline: false,
+            },
+            {
+              name: `${prefix}stats`,
+              value: '📊 Show platform statistics',
+              inline: false,
+            },
+            {
+              name: `${prefix}promocode <vip|free>`,
+              value: '🎁 Generate a promo code (Admin only)',
+              inline: false,
+            },
+            {
+              name: `${prefix}ping`,
+              value: '🏓 Check bot latency',
+              inline: false,
+            },
+            {
+              name: `${prefix}help`,
+              value: '📖 Show this help message',
+              inline: false,
+            },
+          )
+          .setColor(Colors.Blurple)
+          .setFooter({ text: 'Acc Hub - Account Generator Platform' })
+          .setTimestamp();
+
+        await message.reply({ embeds: [embed] });
       },
     },
   ];
 
   // Register commands
   for (const command of commands) {
-    client.commands.set(command.data.name, command);
+    client.commands.set(command.name, command);
+    
+    // Register aliases
+    if (command.aliases) {
+      for (const alias of command.aliases) {
+        client.commands.set(alias, command);
+      }
+    }
   }
 
-  // Deploy commands to Discord
-  try {
-    const commandsData = commands.map(cmd => cmd.data.toJSON());
-    
-    if (process.env.DISCORD_GUILD_ID) {
-      // Guild commands (instant update)
-      const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID);
-      await guild.commands.set(commandsData);
-      console.log(`✅ Registered ${commands.length} slash commands for guild: ${guild.name}`);
-    } else {
-      // Global commands (takes up to 1 hour)
-      await client.application.commands.set(commandsData);
-      console.log(`✅ Registered ${commands.length} global slash commands`);
-    }
-  } catch (error) {
-    console.error('❌ Error registering commands:', error);
-  }
+  console.log(`✅ Loaded ${commands.length} prefix commands`);
 }
 

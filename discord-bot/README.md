@@ -8,7 +8,7 @@ Automated Discord bot that sets up your Acc Hub Discord server with all channels
 - ✅ **Role Management**: Creates FREE, VIP, Staff, Moderator, Admin roles
 - ✅ **Channel Setup**: Creates all necessary channels with proper permissions
 - ✅ **Webhook Integration**: Creates webhooks for platform integration
-- ✅ **Slash Commands**: Various commands for server management
+- ✅ **Prefix Commands**: Various commands for server management (uses `!` prefix)
 - ✅ **Auto-Moderation**: Sets up auto-moderation rules
 
 ## 📋 Prerequisites
@@ -36,7 +36,6 @@ Automated Discord bot that sets up your Acc Hub Discord server with all channels
 1. Go to "OAuth2" → "URL Generator"
 2. Select scopes:
    - ✅ `bot`
-   - ✅ `applications.commands`
 3. Select bot permissions:
    - ✅ Administrator (for full setup access)
    - Or select manually:
@@ -60,9 +59,10 @@ cp .env.example .env
 ```env
 DISCORD_BOT_TOKEN=your_bot_token_here
 DISCORD_GUILD_ID=your_server_id_here
+DISCORD_PREFIX=!
 PLATFORM_URL=https://your-platform-url.com
 ADMIN_USER_IDS=your_discord_user_id
-AUTO_SETUP=true
+AUTO_SETUP=false
 ```
 
 3. Install dependencies:
@@ -89,9 +89,12 @@ npm run setup
 
 ## 🤖 Commands
 
-### `/setup`
+All commands use the `!` prefix (can be changed in `.env` with `DISCORD_PREFIX`).
+
+### `!setup`
 - **Permission**: Administrator only
 - **Description**: Automatically sets up the entire Discord server
+- **Usage**: `!setup`
 - **What it does**:
   - Creates all roles (FREE, VIP, Staff, Moderator, Admin, etc.)
   - Creates all channels with proper categories
@@ -99,18 +102,24 @@ npm run setup
   - Creates webhooks for platform integration
   - Sends welcome message
 
-### `/stats`
+### `!stats`
 - **Description**: Show platform statistics
-- **Usage**: `/stats`
+- **Usage**: `!stats`
 
-### `/promocode`
+### `!promocode <vip|free>`
+- **Aliases**: `!promo`, `!code`
 - **Permission**: Administrator only
 - **Description**: Generate promo codes (requires platform API integration)
-- **Usage**: `/promocode plan:vip` or `/promocode plan:free`
+- **Usage**: `!promocode vip` or `!promocode free`
 
-### `/ping`
+### `!ping`
 - **Description**: Check bot latency
-- **Usage**: `/ping`
+- **Usage**: `!ping`
+
+### `!help`
+- **Aliases**: `!h`, `!commands`
+- **Description**: Show all available commands
+- **Usage**: `!help`
 
 ## 📁 Server Structure Created
 
@@ -177,6 +186,7 @@ The webhook URLs will be printed in the console when you run the bot.
 |----------|-------------|----------|
 | `DISCORD_BOT_TOKEN` | Your Discord bot token | ✅ Yes |
 | `DISCORD_GUILD_ID` | Your Discord server ID | ✅ Yes |
+| `DISCORD_PREFIX` | Command prefix (default: `!`) | ❌ No |
 | `PLATFORM_URL` | Your platform URL | ❌ No |
 | `ADMIN_USER_IDS` | Comma-separated Discord user IDs | ❌ No |
 | `AUTO_SETUP` | Run setup on bot start (true/false) | ❌ No |
@@ -202,11 +212,14 @@ Edit `src/setup.js` to customize:
 Add new commands in `src/commands.js`:
 ```javascript
 {
-  data: new SlashCommandBuilder()
-    .setName('mycommand')
-    .setDescription('My command description'),
-  async execute(interaction) {
+  name: 'mycommand',
+  aliases: ['mycmd', 'cmd'], // Optional aliases
+  description: 'My command description',
+  async execute(message, args) {
     // Your command logic
+    // message - the Discord message object
+    // args - array of command arguments
+    await message.reply('Command executed!');
   },
 }
 ```
@@ -223,9 +236,10 @@ Add new commands in `src/commands.js`:
 - Check console for error messages
 - Verify server ID is correct
 
-### Commands not showing
-- Wait up to 1 hour for global commands
-- Use guild commands for instant update (set DISCORD_GUILD_ID)
+### Commands not working
+- Check if command prefix is correct (default: `!`)
+- Make sure bot has "Message Content Intent" enabled
+- Check if bot can read messages in the channel
 
 ## 📚 Documentation
 
