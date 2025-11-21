@@ -124,11 +124,17 @@ async function createRoles(guild) {
     const adminUserIds = process.env.ADMIN_USER_IDS.split(',');
     for (const userId of adminUserIds) {
       try {
-        const member = await guild.members.fetch(userId.trim());
-        await member.roles.add(roles.admin);
-        console.log(`✅ Assigned admin role to ${member.user.tag}`);
+        const trimmedUserId = userId.trim();
+        if (!trimmedUserId) continue;
+        
+        const member = await guild.members.fetch(trimmedUserId);
+        if (member) {
+          await member.roles.add(roles.admin);
+          console.log(`✅ Assigned admin role to ${member.user.tag}`);
+        }
       } catch (error) {
-        console.error(`❌ Failed to assign admin to ${userId}:`, error.message);
+        // User not found or not in server - just warn, don't fail
+        console.warn(`⚠️ Could not assign admin to ${userId.trim()}: ${error.message}`);
       }
     }
   }
@@ -163,7 +169,7 @@ async function createChannels(guild, roles) {
 
   // Announcements channel
   channels.announcements = await getOrCreateChannel(guild, 'announcements', {
-    type: ChannelType.GuildAnnouncement,
+    type: ChannelType.GuildText,
     parent: infoCategory,
     topic: '📢 Platform updates, new features, and important news',
     permissionOverwrites: [
@@ -171,6 +177,10 @@ async function createChannels(guild, roles) {
         id: guild.roles.everyone.id,
         deny: [PermissionFlagsBits.SendMessages],
         allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
+      },
+      {
+        id: roles.bot.id,
+        allow: [PermissionFlagsBits.SendMessages],
       },
     ],
   });
@@ -226,23 +236,23 @@ async function createChannels(guild, roles) {
     topic: '🎮 Discussion about account generation, tips & tricks',
   });
 
-  // Suggestions channel (Forum)
+  // Suggestions channel
   channels.suggestions = await getOrCreateChannel(guild, 'suggestions', {
-    type: ChannelType.GuildForum,
+    type: ChannelType.GuildText,
     parent: generalCategory,
     topic: '💡 Suggest new features or improvements',
   });
 
-  // Support channel (Forum)
+  // Support channel
   channels.support = await getOrCreateChannel(guild, 'support', {
-    type: ChannelType.GuildForum,
+    type: ChannelType.GuildText,
     parent: generalCategory,
     topic: '❓ Get help with issues, ask questions',
   });
 
-  // Bug reports channel (Forum)
+  // Bug reports channel
   channels.bugReports = await getOrCreateChannel(guild, 'bug-reports', {
-    type: ChannelType.GuildForum,
+    type: ChannelType.GuildText,
     parent: generalCategory,
     topic: '🐛 Report bugs and issues',
   });
