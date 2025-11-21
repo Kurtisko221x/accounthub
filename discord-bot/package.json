@@ -19,7 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.14.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "@supabase/supabase-js": "^2.84.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.16"

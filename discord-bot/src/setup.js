@@ -526,12 +526,14 @@ async function setupWebhooks(channels, guild) {
       reason: 'Auto-created for platform integration',
     });
 
-    // Account generation webhook
-    webhooks.accountGeneration = await createWebhook(channels.general, {
-      name: 'Acc Hub - Account Generator',
-      avatar: 'https://cdn.discordapp.com/attachments/1441466120631488754/1441474372614492232/acchub.png',
-      reason: 'Auto-created for platform integration',
-    });
+    // Account generation webhook (use the provided webhook URL)
+    const accountGenerationWebhookUrl = process.env.ACCOUNT_GENERATION_WEBHOOK_URL || 
+      'https://discord.com/api/webhooks/1441501264335601774/H4eFwlwQciJKypRM5ytwe_FZj64Cq9Afjl7szpI7LeE4GoMzi2Mx4wglMkwohiEORiqy';
+    
+    console.log('✅ Account Generation Webhook URL:', accountGenerationWebhookUrl);
+    
+    // Store webhook URL for use in commands
+    webhooks.accountGeneration = { url: accountGenerationWebhookUrl };
 
     // Statistics webhook
     webhooks.stats = await createWebhook(channels.platformStats, {
@@ -730,30 +732,35 @@ async function cleanupOldChannelsAndRoles(guild) {
   try {
     // Delete channels that don't match expected names
     let deletedChannels = 0;
+    const channelsToDelete = [];
+    
+    // First pass: collect channels to delete
     for (const channel of guild.channels.cache.values()) {
       // Skip categories for now
       if (channel.type === ChannelType.GuildCategory) continue;
-      
-      // Don't delete channels that match expected names
-      const matchesExpected = expectedChannelNames.some(name => 
-        channel.name === name || 
-        channel.name.toLowerCase().includes(name.toLowerCase().replace(/^[^\w]+/, ''))
-      );
       
       // Don't delete system channels
       if (channel.id === guild.rulesChannelId || channel.id === guild.systemChannelId) {
         continue;
       }
-
-      if (!matchesExpected && !channel.name.startsWith('👋') && !channel.name.startsWith('📜') && 
-          !channel.name.startsWith('📢') && !channel.name.startsWith('🎮') && !channel.name.startsWith('💬')) {
-        try {
-          await channel.delete('Cleaning up old channels during setup');
-          deletedChannels++;
-          console.log(`  🗑️ Deleted old channel: ${channel.name}`);
-        } catch (error) {
-          console.warn(`  ⚠️ Could not delete channel ${channel.name}: ${error.message}`);
-        }
+      
+      // Check if channel name matches expected names exactly
+      const matchesExpected = expectedChannelNames.includes(channel.name);
+      
+      // If channel doesn't match expected names, mark for deletion
+      if (!matchesExpected) {
+        channelsToDelete.push(channel);
+      }
+    }
+    
+    // Second pass: delete collected channels
+    for (const channel of channelsToDelete) {
+      try {
+        await channel.delete('Cleaning up old channels during setup');
+        deletedChannels++;
+        console.log(`  🗑️ Deleted old channel: ${channel.name}`);
+      } catch (error) {
+        console.warn(`  ⚠️ Could not delete channel ${channel.name}: ${error.message}`);
       }
     }
 
@@ -884,17 +891,23 @@ async function createWebhook(channel, options = {}) {
   if (!channel) return null;
   
   try {
-    // Check if webhook already exists
-    const existingWebhooks = await channel.fetchWebhooks();
-    const existing = existingWebhooks.find(w => w.name === options.name);
-    if (existing) {
-      console.log(`✅ Webhook "${options.name}" already exists`);
-      return existing;
-    }
+      // If webhook is an object with URL, return it directly
+      if (options.url) {
+        console.log(`✅ Using provided webhook URL: ${options.name}`);
+        return options;
+      }
 
-    const webhook = await channel.createWebhook(options);
-    console.log(`✅ Created webhook "${options.name}"`);
-    return webhook;
+      // Check if webhook already exists
+      const existingWebhooks = await channel.fetchWebhooks();
+      const existing = existingWebhooks.find(w => w.name === options.name);
+      if (existing) {
+        console.log(`✅ Webhook "${options.name}" already exists`);
+        return existing;
+      }
+
+      const webhook = await channel.createWebhook(options);
+      console.log(`✅ Created webhook "${options.name}"`);
+      return webhook;
   } catch (error) {
     console.error(`❌ Error creating webhook "${options.name}":`, error.message);
     return null;
