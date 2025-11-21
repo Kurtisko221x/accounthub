@@ -99,12 +99,16 @@ npm run build
 
 ### Step 3: Configure Railway
 
-1. **Build Command**: `npm install && npm run build`
-2. **Start Command**: `npx vite preview --host 0.0.0.0 --port $PORT`
-3. **Environment Variables**:
+Railway should auto-detect the project. If not, configure manually:
+
+1. **Build Command**: `npm install && npm run build` (auto-detected)
+2. **Start Command**: `npm run start` (uses PORT from Railway)
+3. **Environment Variables** (add in Railway dashboard):
    - `VITE_SUPABASE_URL` - Your Supabase project URL
    - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
-   - `PORT` - Railway will set this automatically
+   - `PORT` - Railway sets this automatically (don't add manually)
+
+**Note**: The project uses `npm` (not bun) for Railway deployment. The `bun.lockb` file is ignored.
 
 ### Step 4: Database Setup
 
