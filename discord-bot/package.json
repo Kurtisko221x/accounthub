@@ -1,0 +1,28 @@
+{
+  "name": "acc-hub-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for Acc Hub platform - Auto-setup server channels, roles, and integrations",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "setup": "node src/setup.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "acc-hub",
+    "automation"
+  ],
+  "author": "Acc Hub",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16"
+  }
+}
+
