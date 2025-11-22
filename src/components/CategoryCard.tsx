@@ -20,20 +20,28 @@ export const CategoryCard = ({ category, onClick }: CategoryCardProps) => {
   return (
     <button
       onClick={onClick}
-      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-card/80 border border-border/50 p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-primary/20 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
+      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-card/80 border border-border/50 p-4 sm:p-6 transition-all duration-500 hover:border-primary/70 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] hover:shadow-primary/30 hover:-translate-y-2 active:translate-y-0 active:scale-[0.97] will-change-transform"
       disabled={!hasStock}
+      style={{
+        cursor: hasStock ? 'pointer' : 'not-allowed',
+      }}
     >
       {/* Animated background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:via-primary/10 group-hover:to-primary/5 transition-all duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/8 group-hover:via-primary/15 group-hover:to-primary/8 transition-all duration-700 ease-out" />
       
       {/* Shine effect on hover */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-        <div className="absolute -inset-full top-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-shimmer" />
+        <div className="absolute -inset-full top-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
       </div>
+      
+      {/* Glow effect on hover */}
+      <div className="absolute -inset-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 rounded-2xl" />
       
       <div className="relative z-10">
         {/* Icon with better animations */}
-        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-5xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden shadow-lg">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-2xl bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-4xl sm:text-5xl group-hover:scale-125 group-hover:rotate-6 transition-all duration-500 ease-out overflow-hidden shadow-lg group-hover:shadow-primary/50 relative">
+          {/* Icon glow effect */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-500 blur-md" />
           {hasValidImageUrl ? (
             <img 
               src={category.image_url || ''} 
@@ -53,28 +61,29 @@ export const CategoryCard = ({ category, onClick }: CategoryCardProps) => {
         </div>
         
         {/* Name with gradient effect */}
-        <h3 className="text-xl font-bold mb-3 text-foreground group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+        <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-foreground group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500 line-clamp-2">
           {category.name}
         </h3>
         
         {/* Enhanced Stock Badge */}
-        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
+        <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-500 ${
           hasStock 
-            ? "bg-green-500/10 text-green-400 border border-green-500/30 group-hover:bg-green-500/20 group-hover:border-green-500/50" 
+            ? "bg-green-500/10 text-green-400 border border-green-500/30 group-hover:bg-green-500/25 group-hover:border-green-500/70 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-green-500/20" 
             : "bg-red-500/10 text-red-400 border border-red-500/30 opacity-60"
         }`}>
-          <div className={`w-2 h-2 rounded-full ${
+          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full flex-shrink-0 ${
             hasStock ? "bg-green-500 animate-pulse" : "bg-red-500"
           }`} />
-          <span>
+          <span className="whitespace-nowrap">
             {category.stock || 0} in stock
           </span>
         </div>
         
         {/* Click indicator */}
         {hasStock && (
-          <div className="mt-3 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            Click to generate →
+          <div className="mt-2 sm:mt-3 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-1 flex items-center justify-center gap-1">
+            <span>Click to generate</span>
+            <span className="group-hover:translate-x-1 transition-transform duration-500">→</span>
           </div>
         )}
       </div>

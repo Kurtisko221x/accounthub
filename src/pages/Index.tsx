@@ -28,6 +28,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [userPlan, setUserPlan] = useState<'free' | 'vip'>('free');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [categoriesVisible, setCategoriesVisible] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -67,6 +68,7 @@ const Index = () => {
   const loadCategories = async () => {
     try {
       setLoading(true);
+      setCategoriesVisible(false); // Reset visibility for animation
       const { data } = await supabase
         .from("categories")
         .select("*")
@@ -118,6 +120,10 @@ const Index = () => {
           })
         );
         setCategories(categoriesWithStock);
+        // Trigger animation after categories are loaded
+        setTimeout(() => {
+          setCategoriesVisible(true);
+        }, 100);
       }
     } catch (error) {
       console.error("Error loading categories:", error);
@@ -149,7 +155,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={{ scrollBehavior: 'smooth' }}>
       {/* Enhanced Header */}
       <header className="border-b border-border/50 sticky top-0 z-10 backdrop-blur-md bg-background/90 shadow-lg shadow-black/20">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -197,21 +203,21 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Enhanced VIP/FREE Banner - Top Notice */}
-        <div className="mb-8 relative overflow-hidden rounded-2xl border-2 border-gradient-to-r from-yellow-500/50 via-purple-500/50 to-blue-500/50 bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-blue-500/10 p-8 shadow-2xl shadow-black/50 backdrop-blur-sm">
+        <div className="mb-6 sm:mb-8 relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-gradient-to-r from-yellow-500/50 via-purple-500/50 to-blue-500/50 bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-blue-500/10 p-4 sm:p-6 lg:p-8 shadow-2xl shadow-black/50 backdrop-blur-sm">
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-purple-500/5 to-blue-500/5 animate-pulse"></div>
           {/* Animated border glow */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-yellow-500/20 via-purple-500/20 to-blue-500/20 blur-xl opacity-50 animate-pulse-glow"></div>
           <div className="relative z-10">
-            <div className="flex items-center justify-center gap-8 flex-wrap">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] animate-pulse" />
-                  <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(250,204,21,0.6)] animate-pulse">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+              <div className="text-center w-full sm:w-auto">
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                  <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] animate-pulse" />
+                  <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(250,204,21,0.6)] animate-pulse">
                     VIP GENERATOR
                   </span>
-                  <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] animate-pulse" />
+                  <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] animate-pulse" />
                 </div>
                 <p className="text-sm text-yellow-300/90 font-medium">
                   <span className="text-yellow-400 font-bold">90% Success Rate</span> - Premium quality accounts with high success chance
@@ -221,15 +227,16 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="h-12 w-px bg-gradient-to-b from-transparent via-white/30 to-transparent"></div>
+              <div className="hidden sm:block h-12 w-px bg-gradient-to-b from-transparent via-white/30 to-transparent"></div>
+              <div className="block sm:hidden w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent my-2"></div>
               
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Gift className="w-6 h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]">
+              <div className="text-center w-full sm:w-auto">
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                  <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                  <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]">
                     FREE GENERATOR
                   </span>
-                  <Gift className="w-6 h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                  <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
                 </div>
                 <p className="text-sm text-blue-300/90 font-medium">
                   <span className="text-blue-400 font-bold">10% Success Rate</span> - Basic free accounts for everyone
@@ -251,8 +258,8 @@ const Index = () => {
         </div>
 
         {/* Generator Info Section */}
-        <div className="mb-8 space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             {/* FREE Generator */}
             <Card className="border-2 border-blue-500/50 bg-blue-500/5">
               <CardContent className="p-6">
@@ -383,21 +390,44 @@ const Index = () => {
         )}
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-6">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl mx-auto mb-4 flex items-center justify-center animate-pulse shadow-lg shadow-primary/30">
-                  <span className="text-4xl animate-float">⚡</span>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/50 to-accent/50 blur-2xl opacity-50 animate-pulse"></div>
+          <div className="space-y-12">
+            {/* Skeleton loaders for FREE section */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-muted animate-pulse"></div>
+                <div className="h-8 w-48 rounded-lg bg-muted animate-pulse"></div>
               </div>
-              <div className="space-y-2">
-                <p className="text-lg font-medium text-foreground">Loading categories...</p>
-                <div className="flex gap-2 justify-center">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={`skeleton-free-${i}`}
+                    className="rounded-2xl border border-border/50 p-6 space-y-4 animate-pulse"
+                  >
+                    <div className="w-20 h-20 mx-auto rounded-2xl bg-muted animate-skeleton"></div>
+                    <div className="h-6 w-3/4 mx-auto rounded bg-muted animate-skeleton"></div>
+                    <div className="h-8 w-24 mx-auto rounded-full bg-muted animate-skeleton"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Skeleton loaders for VIP section */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-muted animate-pulse"></div>
+                <div className="h-8 w-48 rounded-lg bg-muted animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={`skeleton-vip-${i}`}
+                    className="rounded-2xl border border-border/50 p-6 space-y-4 animate-pulse"
+                  >
+                    <div className="w-20 h-20 mx-auto rounded-2xl bg-muted animate-skeleton"></div>
+                    <div className="h-6 w-3/4 mx-auto rounded bg-muted animate-skeleton"></div>
+                    <div className="h-8 w-24 mx-auto rounded-full bg-muted animate-skeleton"></div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -429,18 +459,26 @@ const Index = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {categories
                   .filter((category) => (category.freeStock || 0) > 0)
-                  .map((category) => (
-                    <CategoryCard
+                  .map((category, index) => (
+                    <div
                       key={`free-${category.id}`}
-                      category={{ ...category, stock: category.freeStock }}
-                      onClick={() => {
-                        if (category.freeStock && category.freeStock > 0) {
-                          setSelectedCategory({ ...category, stock: category.freeStock });
-                          setSelectedGeneratorType('free'); // Set to FREE generator
-                          setModalOpen(true);
-                        }
+                      className={`${categoriesVisible ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`}
+                      style={{
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'both',
                       }}
-                    />
+                    >
+                      <CategoryCard
+                        category={{ ...category, stock: category.freeStock }}
+                        onClick={() => {
+                          if (category.freeStock && category.freeStock > 0) {
+                            setSelectedCategory({ ...category, stock: category.freeStock });
+                            setSelectedGeneratorType('free'); // Set to FREE generator
+                            setModalOpen(true);
+                          }
+                        }}
+                      />
+                    </div>
                   ))}
                 {categories.filter((category) => (category.freeStock || 0) > 0).length === 0 && (
                   <div className="col-span-full text-center py-12 text-muted-foreground">
@@ -468,18 +506,26 @@ const Index = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {categories
                   .filter((category) => (category.vipStock || 0) > 0)
-                  .map((category) => (
-                    <CategoryCard
+                  .map((category, index) => (
+                    <div
                       key={`vip-${category.id}`}
-                      category={{ ...category, stock: category.vipStock }}
-                      onClick={() => {
-                        if (category.vipStock && category.vipStock > 0) {
-                          setSelectedCategory({ ...category, stock: category.vipStock });
-                          setSelectedGeneratorType('vip'); // Set to VIP generator
-                          setModalOpen(true);
-                        }
+                      className={`${categoriesVisible ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`}
+                      style={{
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'both',
                       }}
-                    />
+                    >
+                      <CategoryCard
+                        category={{ ...category, stock: category.vipStock }}
+                        onClick={() => {
+                          if (category.vipStock && category.vipStock > 0) {
+                            setSelectedCategory({ ...category, stock: category.vipStock });
+                            setSelectedGeneratorType('vip'); // Set to VIP generator
+                            setModalOpen(true);
+                          }
+                        }}
+                      />
+                    </div>
                   ))}
                 {categories.filter((category) => (category.vipStock || 0) > 0).length === 0 && (
                   <div className="col-span-full text-center py-12 text-muted-foreground">

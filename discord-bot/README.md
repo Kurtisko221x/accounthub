@@ -106,6 +106,28 @@ All commands use the `!` prefix (can be changed in `.env` with `DISCORD_PREFIX`)
 - **Description**: Show platform statistics
 - **Usage**: `!stats`
 
+### `!generate <category> [free|vip]`
+- **Aliases**: `!gen`, `!account`
+- **Description**: Generate an account for a category (FREE or VIP generator)
+- **Usage**: `!generate steam vip` or `!generate netflix free`
+- **Notes**: 
+  - Account details are sent via DM (private message)
+  - If DMs are disabled, details are sent in channel with spoiler tags
+  - Automatically sends webhook notification to configured webhook
+
+### `!categories`
+- **Aliases**: `!cats`, `!list`
+- **Description**: Show all available account categories
+- **Usage**: `!categories`
+
+### `!profil <email>`
+- **Aliases**: `!profile`, `!user`, `!info`
+- **Permission**: Administrator only
+- **Description**: Show detailed user profile information from database
+- **Usage**: `!profil kurtegrell@gmail.com`
+- **Shows**: User plan, account creation date, last login, generation history, promo code history
+- **Note**: Requires `SUPABASE_SERVICE_KEY` to be set in `.env`
+
 ### `!promocode <vip|free>`
 - **Aliases**: `!promo`, `!code`
 - **Permission**: Administrator only
@@ -187,8 +209,11 @@ The webhook URLs will be printed in the console when you run the bot.
 | `DISCORD_BOT_TOKEN` | Your Discord bot token | ✅ Yes |
 | `DISCORD_GUILD_ID` | Your Discord server ID | ✅ Yes |
 | `DISCORD_PREFIX` | Command prefix (default: `!`) | ❌ No |
+| `SUPABASE_URL` | Your Supabase project URL | ✅ Yes |
+| `SUPABASE_ANON_KEY` | Your Supabase anonymous key | ✅ Yes |
+| `SUPABASE_SERVICE_KEY` | Your Supabase service role key (for !profil command) | ❌ No |
+| `ACCOUNT_GENERATION_WEBHOOK_URL` | Discord webhook URL for account generation notifications | ❌ No |
 | `PLATFORM_URL` | Your platform URL | ❌ No |
-| `ADMIN_USER_IDS` | Comma-separated Discord user IDs | ❌ No |
 | `AUTO_SETUP` | Run setup on bot start (true/false) | ❌ No |
 
 ## 📝 Getting Discord Server ID
